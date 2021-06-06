@@ -57,8 +57,8 @@ for part in parts:
         f. write(f'1 {color} 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat')
 
     for lat,lon in angles:
-        lat += random.randint(-3, 3)
-        lon += random.randint(-5, 5)
+        lat += random.randint(0, 6)
+        lon += random.randint(0, 10)
 
         render = render + 1
         print(f'Rendering {part} from position {lat}, {lon} (render {render} of {len(parts)  * len(angles)})')
