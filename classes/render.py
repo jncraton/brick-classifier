@@ -24,9 +24,7 @@ rotations = ['0', '90', '180', '270']
 
 if quick:
     colors = ['71']
-    backgrounds = ['ffffff']
     angles = list(itertools.product([17], [17]))
-    rotations = ['0']
 
 print(f"Generating {len(angles) * len(colors) * len(backgrounds) * len(rotations)} renders per class")
 
