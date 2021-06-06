@@ -27,7 +27,6 @@
     <input type="file" id="imageLoader" name="imageLoader" accept="image/*" capture="camera" />
     <canvas id="imageCanvas"></canvas>
     <ol id=results></ol>
-    <section id=log></section>
     
     <!-- Load ONNX.js -->
     <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
@@ -45,12 +44,8 @@
       var canvas = document.getElementById('imageCanvas');
       var ctx = canvas.getContext('2d');
 
-      function log(msg) {
-        console.log(msg)
-        document.getElementById('log').innerHTML += '<br>' + msg
-      }
-
       function handleImage(e){
+          document.getElementById('results').innerHTML='Processing image...'
           var reader = new FileReader();
           reader.onload = function(event){
               var img = new Image();
@@ -82,25 +77,18 @@
       }
 
       function classify(img) {
-        log('loading model...')
         // create a session
         const myOnnxSession = new onnx.InferenceSession('wasm');
         // load the ONNX model file
         myOnnxSession.loadModel('./part-classifier.onnx').then(() => {
-          log('model loaded. loading image...')
           // generate model input
           const imageLoader = new ImageLoader(224, 224);
           imageLoader.getImageData(img).then((imageData) => {
             const preprocessedData = preprocess(imageData.data, 224, 224);
             const inputTensor = new onnx.Tensor(preprocessedData, 'float32', [1, 3, 224, 224]);
-            log('image loaded. running inference...')
-
             myOnnxSession.run([inputTensor]).then((output) => {
-              log('inference complete')
               const outputTensor = output.values().next().value;
 
-              log(`${outputTensor.data}`)
-              
               let results = class_names.map((name, i) => { 
                 return [outputTensor.data[i], class_names[i]]
               })
