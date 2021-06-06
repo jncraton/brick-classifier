@@ -93,6 +93,7 @@
             log('image loaded. running inference...')
 
             myOnnxSession.run([inputTensor]).then((output) => {
+              log('inference complete')
               const outputTensor = output.values().next().value;
 
               log(`${outputTensor.data}`)
