@@ -2,8 +2,10 @@ import subprocess
 import itertools
 import os
 
+quick = True
+
 parts = [
-    '4037',
+    '6141',
     '3023',
     '3024',
     '98138',
@@ -18,9 +20,15 @@ parts = [
 colors = ['71', '72', '0', '15']
 backgrounds = ['999999', 'aaaaaa', 'cccccc', 'dddddd', 'eeeeee', 'ffffff']
 angles = list(itertools.product([271, 313, 343, 17, 49, 77], range(17,360,47)))
-num_rotations = 4
+rotations = ['0', '90', '180', '270']
 
-print(f"Generating {len(angles) * len(colors) * len(backgrounds) * num_rotations} renders per class")
+if quick:
+    colors = ['71']
+    backgrounds = ['ffffff']
+    angles = list(itertools.product([17], [17]))
+    rotations = ['0']
+
+print(f"Generating {len(angles) * len(colors) * len(backgrounds) * len(rotations)} renders per class")
 
 i = 0
 
@@ -44,21 +52,21 @@ for part in parts:
                 'tmp.ldr'
             ], stderr=subprocess.DEVNULL)
 
-            print(f'Rendering {part} in color {color} from position {lat}, {lon} ({i} of {len(parts) * len(colors) * len(angles)})')
             i = i + 1
+            print(f'Rendering {part} in color {color} from position {lat}, {lon} ({i} of {len(parts) * len(colors) * len(angles)})')
 
             for bg in backgrounds:
-
                 subprocess.run([
                     'convert', 
                     f'{part}/{lat}-{lon}-{color}-ffffff.png',
                     '-background', f'#{bg}',
                     '-gravity', 'center',
                     '-extent', '256x256',
+                    '-blur', '1x1',
                     f'{part}/{lat}-{lon}-{color}-{bg}.png',
                 ])
 
-                for rotation in ['90', '180', '270']:
+                for rotation in rotations[1:]:
                     subprocess.run([
                         'convert', 
                         f'{part}/{lat}-{lon}-{color}-ffffff.png',
