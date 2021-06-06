@@ -1,4 +1,6 @@
 import subprocess
+import itertools
+import os
 
 parts = [
     '3001',
@@ -13,46 +15,54 @@ parts = [
     '3010',
 ]
 
-for part in parts:
-    with open('tmp.ldr', 'w') as f:
-        f. write(f'1 71 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat')
+colors = ['71', '72', '0', '15']
+backgrounds = ['999999', 'aaaaaa', 'cccccc', 'dddddd', 'eeeeee', 'ffffff']
+angles = list(itertools.product([271, 313, 343, 17, 49, 77], range(17,360,47)))
+num_rotations = 4
 
-    for lat in range(15, 360, 60):
-        for lon in range(15, 360, 60):
-            print(part, lat, lon)
+print(f"Generating {len(angles) * len(colors) * len(backgrounds) * num_rotations} renders per class")
+
+i = 0
+
+for part in parts:
+    try:
+        os.mkdir(part)
+    except FileExistsError:
+        pass
+
+    for color in colors:
+        with open('tmp.ldr', 'w') as f:
+            f. write(f'1 {color} 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat')
+
+        for lat,lon in angles:
             subprocess.run([
                 'leocad', 
-                '--image', f'{part}-{lat}-{lon}-center.png', 
+                '--image', f'{part}/{lat}-{lon}-{color}-ffffff.png', 
                 '--width', '160', 
                 '--height', '160', 
                 '--camera-angles', f'{lat}', f'{lon}', 
                 'tmp.ldr'
             ], stderr=subprocess.DEVNULL)
 
-            subprocess.run([
-                'convert', 
-                f'{part}-{lat}-{lon}-center.png',
-                '-colorspace', 'Gray',
-                '-gravity', 'center',
-                '-extent', '180x180',
-                f'{part}-{lat}-{lon}-center.png',
-            ])
+            print(f'Rendering {part} in color {color} from position {lat}, {lon} ({i} of {len(parts) * len(colors) * len(angles)})')
+            i = i + 1
 
-            for gravity in ['north', 'south', 'east', 'west', 'center']:
-                for angle in ['-10', '10']:
-                    subprocess.run([
-                        'convert', 
-                        f'{part}-{lat}-{lon}-center.png',
-                        '-gravity', gravity,
-                        '-extent', '224x224',
-                        '-distort', 'SRT', angle,
-                        f'{part}-{lat}-{lon}-{gravity}-{angle}.png',
-                    ])
-            
+            for bg in backgrounds:
+
                 subprocess.run([
                     'convert', 
-                    f'{part}-{lat}-{lon}-center.png',
-                    '-gravity', gravity,
-                    '-extent', '224x224',
-                    f'{part}-{lat}-{lon}-{gravity}.png',
+                    f'{part}/{lat}-{lon}-{color}-ffffff.png',
+                    '-background', f'#{bg}',
+                    '-gravity', 'center',
+                    '-extent', '256x256',
+                    f'{part}/{lat}-{lon}-{color}-{bg}.png',
                 ])
+
+                for rotation in ['90', '180', '270']:
+                    subprocess.run([
+                        'convert', 
+                        f'{part}/{lat}-{lon}-{color}-ffffff.png',
+                        '-rotate', rotation,
+                        f'{part}/{lat}-{lon}-{color}-{bg}-{rotation}.png',
+                    ])
+
