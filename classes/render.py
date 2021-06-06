@@ -20,16 +20,17 @@ parts = [
     '3020',
 ]
 
-colors = ['71', '72', '0', '15']
-backgrounds = ['999999', 'aaaaaa', 'cccccc', 'dddddd', 'eeeeee', 'ffffff']
+color = 15
+backgrounds = [3*c for c in ['9f', 'a8', 'af', 'b8', 'bf', 'c8', 'cf', 'd8', 'df', 'e8', 'ef', 'f8', 'ff']]
 angles = list(itertools.product([271, 313, 343, 17, 49, 77], range(17,360,47)))
-rotations = ['0']
+rotations = ['0', '90', '180', '270']
+noise_levels = ['1', '2', '3']
+blurs = ['1x1', '2x2']
 
 if quick:
-    colors = ['71']
     angles = list(itertools.product([17], [17]))
 
-print(f"Generating {len(angles) * len(colors) * len(backgrounds) * len(rotations)} renders per class")
+print(f"Generating {len(angles) * len(backgrounds) * len(rotations)} renders per class")
 
 i = 0
 
@@ -39,42 +40,52 @@ for part in parts:
     except FileExistsError:
         pass
 
-    for color in colors:
-        with open('tmp.ldr', 'w') as f:
-            f. write(f'1 {color} 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat')
+    with open('tmp.ldr', 'w') as f:
+        f. write(f'1 {color} 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat')
 
-        for lat,lon in angles:
-            lat += random.randint(-5, 5)
-            lon += random.randint(-5, 5)
-            subprocess.run([
-                'leocad', 
-                '--image', f'{part}/{lat}-{lon}-{color}-ffffff.png', 
-                '--width', '160', 
-                '--height', '160', 
-                '--camera-angles', f'{lat}', f'{lon}', 
-                'tmp.ldr'
-            ], stderr=subprocess.DEVNULL)
+    for lat,lon in angles:
+        lat += random.randint(-5, 5)
+        lon += random.randint(-5, 5)
 
-            i = i + 1
-            print(f'Rendering {part} in color {color} from position {lat}, {lon} ({i} of {len(parts) * len(colors) * len(angles)})')
+        i = i + 1
+        print(f'Rendering {part} from position {lat}, {lon} ({i} of {len(parts)  * len(angles)})')
 
-            for bg in backgrounds:
+        subprocess.run([
+            'leocad', 
+            '--image', f'{part}/{lat}-{lon}.png', 
+            '--width', '160', 
+            '--height', '160', 
+            '--camera-angles', f'{lat}', f'{lon}', 
+            'tmp.ldr'
+        ], stderr=subprocess.DEVNULL)
+
+        for bg in backgrounds:
+            for rotation in rotations:
+                shadowx = random.randint(-4, 4)
+                shadowy = random.randint(1, 4)
+                shadowintensity = hex(random.randint(60,90))[2:]
+                blur = random.choice(blurs)
+                noise_level = random.choice(noise_levels)
+                part_brightness = random.randint(-70, 0)
+                brightness = random.randint(-5, 5)
+                
                 subprocess.run([
-                    'convert', 
-                    f'{part}/{lat}-{lon}-{color}-ffffff.png',
-                    '-background', f'#{bg}',
-                    '-colorspace', 'Gray',
+                    'convert',
+                    f'{part}/{lat}-{lon}.png',
+                    '-brightness-contrast', f'{part_brightness}',
+                    '-rotate', rotation,
+                    '(', '-clone', '0', '-background', 'gray', '-shadow', f'80x3{shadowx:+}{shadowy:+}', ')',
+                    '-reverse', '-background', f'#{bg}', '-layers', 'merge', '+repage',
                     '-gravity', 'center',
                     '-extent', '256x256',
-                    '-blur', '2x2',
-                    f'{part}/{lat}-{lon}-{color}-{bg}.png',
+                    '-colorspace', 'Gray',
+                    '-attenuate', f'0.{noise_level}',
+                    '+noise', 'Laplacian',
+                    '-blur', blur,
+                    '-colorspace', 'Gray',
+                    '-brightness-contrast', f'{brightness}',
+                    f'{part}/{lat}-{lon}-{bg}-{rotation}-{noise_level}-{blur}-{part_brightness}.png',
                 ])
 
-                for rotation in rotations[1:]:
-                    subprocess.run([
-                        'convert', 
-                        f'{part}/{lat}-{lon}-{color}-{bg}.png',
-                        '-rotate', rotation,
-                        f'{part}/{lat}-{lon}-{color}-{bg}-{rotation}.png',
-                    ])
+        os.unlink(f'{part}/{lat}-{lon}.png')
 
