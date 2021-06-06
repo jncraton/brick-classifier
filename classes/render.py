@@ -58,16 +58,17 @@ for part in parts:
                     'convert', 
                     f'{part}/{lat}-{lon}-{color}-ffffff.png',
                     '-background', f'#{bg}',
+                    '-colorspace', 'Gray',
                     '-gravity', 'center',
                     '-extent', '256x256',
-                    '-blur', '1x1',
+                    '-blur', '2x2',
                     f'{part}/{lat}-{lon}-{color}-{bg}.png',
                 ])
 
                 for rotation in rotations[1:]:
                     subprocess.run([
                         'convert', 
-                        f'{part}/{lat}-{lon}-{color}-ffffff.png',
+                        f'{part}/{lat}-{lon}-{color}-{bg}.png',
                         '-rotate', rotation,
                         f'{part}/{lat}-{lon}-{color}-{bg}-{rotation}.png',
                     ])
