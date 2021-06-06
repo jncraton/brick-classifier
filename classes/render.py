@@ -30,13 +30,26 @@ blurs = ['1x1', '2x2']
 if quick:
     angles = list(itertools.product([17], [17]))
 
-print(f"Generating {len(angles) * len(backgrounds) * len(rotations)} images per class")
+print(f"Generating {len(angles) * len(backgrounds)} images per class")
 
-i = 0
+render = 0
+image = 0
 
+try:
+    os.mkdir('train')
+except FileExistsError:
+    pass
+try:
+    os.mkdir('val')
+except FileExistsError:
+    pass
 for part in parts:
     try:
-        os.mkdir(part)
+        os.mkdir(f'train/{part}')
+    except FileExistsError:
+        pass
+    try:
+        os.mkdir(f'val/{part}')
     except FileExistsError:
         pass
 
@@ -47,12 +60,12 @@ for part in parts:
         lat += random.randint(-5, 5)
         lon += random.randint(-5, 5)
 
-        i = i + 1
-        print(f'Rendering {part} from position {lat}, {lon} (render {i} of {len(parts)  * len(angles)})')
+        render = render + 1
+        print(f'Rendering {part} from position {lat}, {lon} (render {render} of {len(parts)  * len(angles)})')
 
         subprocess.run([
             'leocad', 
-            '--image', f'{part}/{lat}-{lon}.png', 
+            '--image', f'render.png', 
             '--width', '160', 
             '--height', '160', 
             '--camera-angles', f'{lat}', f'{lon}', 
@@ -60,32 +73,35 @@ for part in parts:
         ], stderr=subprocess.DEVNULL)
 
         for bg in backgrounds:
-            for rotation in rotations:
-                shadowx = random.randint(-4, 4)
-                shadowy = random.randint(1, 4)
-                shadowintensity = hex(random.randint(60,90))[2:]
-                blur = random.choice(blurs)
-                noise_level = random.choice(noise_levels)
-                part_brightness = random.randint(-70, 0)
-                brightness = random.randint(-5, 5)
-                
-                subprocess.run([
-                    'convert',
-                    f'{part}/{lat}-{lon}.png',
-                    '-brightness-contrast', f'{part_brightness}',
-                    '-rotate', rotation,
-                    '(', '-clone', '0', '-background', 'gray', '-shadow', f'80x3{shadowx:+}{shadowy:+}', ')',
-                    '-reverse', '-background', f'#{bg}', '-layers', 'merge', '+repage',
-                    '-gravity', 'center',
-                    '-extent', '256x256',
-                    '-colorspace', 'Gray',
-                    '-attenuate', f'0.{noise_level}',
-                    '+noise', 'Laplacian',
-                    '-blur', blur,
-                    '-colorspace', 'Gray',
-                    '-brightness-contrast', f'{brightness}',
-                    f'{part}/{lat}-{lon}-{bg}-{rotation}-{noise_level}-{blur}-{part_brightness}.png',
-                ])
+            image += 1
+            dataset = 'train' if (image % 10) else 'val'
+        
+            rotation = random.choice(rotations)
+            shadowx = random.randint(-4, 4)
+            shadowy = random.randint(1, 4)
+            shadowintensity = hex(random.randint(60,90))[2:]
+            blur = random.choice(blurs)
+            noise_level = random.choice(noise_levels)
+            part_brightness = random.randint(-70, 0)
+            brightness = random.randint(-5, 5)
+            
+            subprocess.run([
+                'convert',
+                f'render.png',
+                '-brightness-contrast', f'{part_brightness}',
+                '-rotate', rotation,
+                '(', '-clone', '0', '-background', 'gray', '-shadow', f'80x3{shadowx:+}{shadowy:+}', ')',
+                '-reverse', '-background', f'#{bg}', '-layers', 'merge', '+repage',
+                '-gravity', 'center',
+                '-extent', '256x256',
+                '-colorspace', 'Gray',
+                '-attenuate', f'0.{noise_level}',
+                '+noise', 'Laplacian',
+                '-blur', blur,
+                '-colorspace', 'Gray',
+                '-brightness-contrast', f'{brightness}',
+                f'{dataset}/{part}/{lat}-{lon}-{bg}-{rotation}-{noise_level}-{blur}{part_brightness}.png',
+            ])
 
-        os.unlink(f'{part}/{lat}-{lon}.png')
+        os.unlink(f'render.png')
 
