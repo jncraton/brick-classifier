@@ -81,7 +81,7 @@
       function classify(img) {
         log('loading model...')
         // create a session
-        const myOnnxSession = new onnx.InferenceSession();
+        const myOnnxSession = new onnx.InferenceSession('cpu');
         // load the ONNX model file
         myOnnxSession.loadModel('./part-classifier.onnx').then(() => {
           log('model loaded. loading image...')
