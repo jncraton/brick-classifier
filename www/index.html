@@ -2,6 +2,10 @@
   <head> </head>
 
   <body>
+    <label>Image File:</label><br/>
+    <input type="file" id="imageLoader" name="imageLoader"/>
+    <canvas id="imageCanvas"></canvas>
+    
     <!-- Load ONNX.js -->
     <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
     <script src="./ndarray.js"></script>
@@ -9,6 +13,28 @@
     <!-- Code that consume ONNX.js -->
     <script>
       const class_names = ["3004", "3005", "3020", "3023", "3024", "3069b", "3710", "54200", "6141", "98138"]
+
+      var imageLoader = document.getElementById('imageLoader');
+          imageLoader.addEventListener('change', handleImage, false);
+      var canvas = document.getElementById('imageCanvas');
+      var ctx = canvas.getContext('2d');
+
+
+      function handleImage(e){
+          var reader = new FileReader();
+          reader.onload = function(event){
+              var img = new Image();
+              img.onload = function(){
+                  canvas.width = img.width;
+                  canvas.height = img.height;
+                  ctx.drawImage(img,0,0);
+              }
+              img.src = event.target.result;
+              console.log(event.target.result)
+              classify(event.target.result)
+          }
+          reader.readAsDataURL(e.target.files[0]);     
+      }
     
       function preprocess(data, width, height) {
         const dataFromImage = ndarray(new Float32Array(data), [width, height, 4]);
@@ -26,27 +52,29 @@
         return dataProcessed.data;
       }
 
-      // create a session
-      const myOnnxSession = new onnx.InferenceSession();
-      // load the ONNX model file
-      myOnnxSession.loadModel("./part-classifier.onnx").then(() => {
-        // generate model input
-        const imageLoader = new ImageLoader(224, 224);
-        imageLoader.getImageData('./3020-1.png').then((imageData) => {
-          const preprocessedData = preprocess(imageData.data, 224, 224);
-          const inputTensor = new onnx.Tensor(preprocessedData, 'float32', [1, 3, 224, 224]);
-          console.log(inputTensor)
-          // execute the model
-          myOnnxSession.run([inputTensor]).then((output) => {
-            // consume the output
-            const outputTensor = output.values().next().value;
-            outputTensor.data.forEach((prob, i) => {
-              console.log(i, prob, class_names[i])
-            })
-            //console.log(`model output tensor: ${outputTensor.data}.`);
+      function classify(img) {
+        // create a session
+        const myOnnxSession = new onnx.InferenceSession();
+        // load the ONNX model file
+        myOnnxSession.loadModel('./part-classifier.onnx').then(() => {
+          // generate model input
+          const imageLoader = new ImageLoader(224, 224);
+          imageLoader.getImageData(img).then((imageData) => {
+            const preprocessedData = preprocess(imageData.data, 224, 224);
+            const inputTensor = new onnx.Tensor(preprocessedData, 'float32', [1, 3, 224, 224]);
+            console.log(inputTensor)
+            // execute the model
+            myOnnxSession.run([inputTensor]).then((output) => {
+              // consume the output
+              const outputTensor = output.values().next().value;
+              outputTensor.data.forEach((prob, i) => {
+                console.log(i, prob, class_names[i])
+              })
+              //console.log(`model output tensor: ${outputTensor.data}.`);
+            });
           });
         });
-      });
+      }
     </script>
   </body>
 </html>
