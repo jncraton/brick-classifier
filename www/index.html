@@ -75,7 +75,7 @@
               results.sort((a, b) => b[0] - a[0])
 
               const items = results.map(item => {
-                return item[1]
+                return `<img src="https://cdn.rebrickable.com/media/thumbs/parts/ldraw/71/${item[1]}.png/72x72p.png" alt="${item[1]}" /> ${item[1]} (${item[0]})`
               })
               
               document.getElementById('results').innerHTML = '<li>' + items.join('<li>')
