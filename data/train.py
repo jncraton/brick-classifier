@@ -44,7 +44,7 @@ data_transforms = {
     ]),
 }
 
-data_dir = '/content/drive/MyDrive/lego-parts'
+data_dir = '.'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
