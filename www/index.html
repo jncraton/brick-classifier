@@ -1,0 +1,52 @@
+<html>
+  <head> </head>
+
+  <body>
+    <!-- Load ONNX.js -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
+    <script src="./ndarray.js"></script>
+    <script src="./image-loader.js"></script>
+    <!-- Code that consume ONNX.js -->
+    <script>
+      const class_names = ["3004", "3005", "3020", "3023", "3024", "3069b", "3710", "54200", "6141", "98138"]
+    
+      function preprocess(data, width, height) {
+        const dataFromImage = ndarray(new Float32Array(data), [width, height, 4]);
+        const dataProcessed = ndarray(new Float32Array(width * height * 3), [1, 3, height, width]);
+
+        // Normalize 0-255 to (-1)-1
+        ndarray.ops.divseq(dataFromImage, 128.0);
+        ndarray.ops.subseq(dataFromImage, 1.0);
+
+        // Realign imageData from [224*224*4] to the correct dimension [1*3*224*224].
+        ndarray.ops.assign(dataProcessed.pick(0, 0, null, null), dataFromImage.pick(null, null, 2));
+        ndarray.ops.assign(dataProcessed.pick(0, 1, null, null), dataFromImage.pick(null, null, 1));
+        ndarray.ops.assign(dataProcessed.pick(0, 2, null, null), dataFromImage.pick(null, null, 0));
+
+        return dataProcessed.data;
+      }
+
+      // create a session
+      const myOnnxSession = new onnx.InferenceSession();
+      // load the ONNX model file
+      myOnnxSession.loadModel("./part-classifier.onnx").then(() => {
+        // generate model input
+        const imageLoader = new ImageLoader(224, 224);
+        imageLoader.getImageData('./3020-1.png').then((imageData) => {
+          const preprocessedData = preprocess(imageData.data, 224, 224);
+          const inputTensor = new onnx.Tensor(preprocessedData, 'float32', [1, 3, 224, 224]);
+          console.log(inputTensor)
+          // execute the model
+          myOnnxSession.run([inputTensor]).then((output) => {
+            // consume the output
+            const outputTensor = output.values().next().value;
+            outputTensor.data.forEach((prob, i) => {
+              console.log(i, prob, class_names[i])
+            })
+            //console.log(`model output tensor: ${outputTensor.data}.`);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
