@@ -3,7 +3,7 @@ import itertools
 import os
 import random
 
-quick = True
+quick = False
 
 random.seed(0)
 
