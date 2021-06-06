@@ -1,8 +1,11 @@
 import subprocess
 import itertools
 import os
+import random
 
 quick = True
+
+random.seed(0)
 
 parts = [
     '6141',
@@ -20,7 +23,7 @@ parts = [
 colors = ['71', '72', '0', '15']
 backgrounds = ['999999', 'aaaaaa', 'cccccc', 'dddddd', 'eeeeee', 'ffffff']
 angles = list(itertools.product([271, 313, 343, 17, 49, 77], range(17,360,47)))
-rotations = ['0', '90', '180', '270']
+rotations = ['0']
 
 if quick:
     colors = ['71']
@@ -41,6 +44,8 @@ for part in parts:
             f. write(f'1 {color} 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat')
 
         for lat,lon in angles:
+            lat += random.randint(-5, 5)
+            lon += random.randint(-5, 5)
             subprocess.run([
                 'leocad', 
                 '--image', f'{part}/{lat}-{lon}-{color}-ffffff.png', 
