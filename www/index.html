@@ -53,9 +53,14 @@
           reader.onload = function(event){
               var img = new Image();
               img.onload = function(){
-                  canvas.width = img.width;
-                  canvas.height = img.height;
-                  ctx.drawImage(img,0,0);
+                  // Crop to square
+                  const short = Math.min(img.width, img.height)
+                  const long = Math.max(img.width, img.height)
+                  canvas.width = short;
+                  canvas.height = short;
+                  let xoffset = img.width < img.height ? 0 : -(long - short) / 2
+                  let yoffset = img.height < img.width ? 0 : -(long - short) / 2
+                  ctx.drawImage(img, xoffset, yoffset)
               }
               img.src = event.target.result;
               classify(event.target.result)
