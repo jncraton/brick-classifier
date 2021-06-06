@@ -22,7 +22,7 @@ parts = [
 
 color = 15
 backgrounds = [3*c for c in ['9f', 'af', 'bf', 'cf', 'df', 'ef', 'ff']]
-angles = list(itertools.product([a % 360 for a in range(291,360+69,13)], range(17,360,17)))
+angles = list(itertools.product([301, 317, 332, 31, 43, 59], range(17,360,23)))
 noise_levels = ['1', '2', '3']
 blurs = ['1x1', '2x2']
 
@@ -56,8 +56,8 @@ for part in parts:
         f. write(f'1 {color} 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat')
 
     for lat,lon in angles:
-        lat += random.randint(0, 6)
-        lon += random.randint(0, 10)
+        lat += random.randint(-6, 6)
+        lon += random.randint(-5, 5)
 
         render = render + 1
         print(f'Rendering {part} from position {lat}, {lon} (render {render} of {len(parts)  * len(angles)})')
