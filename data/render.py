@@ -23,7 +23,6 @@ parts = [
 color = 15
 backgrounds = [3*c for c in ['9f', 'af', 'bf', 'cf', 'df', 'ef', 'ff']]
 angles = list(itertools.product([a % 360 for a in range(291,360+69,13)], range(17,360,17)))
-rotations = ['0', '90', '180', '270']
 noise_levels = ['1', '2', '3']
 blurs = ['1x1', '2x2']
 
@@ -75,7 +74,6 @@ for part in parts:
         image += 1
         dataset = 'train' if (image % 10) else 'val'
     
-        rotation = random.choice(rotations)
         shadowx = random.randint(-4, 4)
         shadowy = random.randint(1, 4)
         shadowintensity = hex(random.randint(60,90))[2:]
@@ -84,12 +82,13 @@ for part in parts:
         part_brightness = random.randint(-70, 0)
         brightness = random.randint(-5, 5)
         bg = random.choice(backgrounds)
+        rotation = random.randint(0, 360)
         
         subprocess.run([
             'convert',
             f'render.png',
             '-brightness-contrast', f'{part_brightness}',
-            '-rotate', rotation,
+            '-distort', 'SRT', f'{rotation}',
             '(', '-clone', '0', '-background', 'gray', '-shadow', f'80x3{shadowx:+}{shadowy:+}', ')',
             '-reverse', '-background', f'#{bg}', '-layers', 'merge', '+repage',
             '-gravity', 'center',
