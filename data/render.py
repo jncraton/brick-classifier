@@ -22,7 +22,7 @@ parts = [
 
 color = 15
 backgrounds = [3*c for c in ['9f', 'af', 'bf', 'cf', 'df', 'ef', 'ff']]
-angles = list(itertools.product([a % 360 for a in range(273,360+87,11)], range(17,360,13)))
+angles = list(itertools.product([a % 360 for a in range(291,360+69,13)], range(17,360,17)))
 rotations = ['0', '90', '180', '270']
 noise_levels = ['1', '2', '3']
 blurs = ['1x1', '2x2']
