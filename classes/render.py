@@ -21,7 +21,7 @@ parts = [
 ]
 
 color = 15
-backgrounds = [3*c for c in ['9f', 'a8', 'af', 'b8', 'bf', 'c8', 'cf', 'd8', 'df', 'e8', 'ef', 'f8', 'ff']]
+backgrounds = [3*c for c in ['9f', 'af', 'bf', 'cf', 'df', 'ef', 'ff']]
 angles = list(itertools.product([271, 313, 343, 17, 49, 77], range(17,360,47)))
 rotations = ['0', '90', '180', '270']
 noise_levels = ['1', '2', '3']
@@ -30,7 +30,7 @@ blurs = ['1x1', '2x2']
 if quick:
     angles = list(itertools.product([17], [17]))
 
-print(f"Generating {len(angles) * len(backgrounds) * len(rotations)} renders per class")
+print(f"Generating {len(angles) * len(backgrounds) * len(rotations)} images per class")
 
 i = 0
 
@@ -48,7 +48,7 @@ for part in parts:
         lon += random.randint(-5, 5)
 
         i = i + 1
-        print(f'Rendering {part} from position {lat}, {lon} ({i} of {len(parts)  * len(angles)})')
+        print(f'Rendering {part} from position {lat}, {lon} (render {i} of {len(parts)  * len(angles)})')
 
         subprocess.run([
             'leocad', 
