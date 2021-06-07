@@ -1,7 +1,7 @@
 Brick Classifier
 ================
 
-[Demo](https://brick-classifer.netlify.app)
+[Demo](https://brick-classifier.netlify.app)
 
 A LEGO brick classifer using a fine-tuned squeezenet and ONNX JS runtime.
 
