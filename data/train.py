@@ -3,8 +3,6 @@ License: BSD
 Author: Sasank Chilamkurthy, Jonathan Craton
 """
 
-from __future__ import print_function, division
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
