@@ -177,6 +177,9 @@ for part in parts:
         subprocess.run([
             'convert',
             f'render.png',
+            '-background', 'transparent',
+            '-gravity', 'center',
+            '-extent', '164x164',
             '-brightness-contrast', f'{part_brightness}',
             '-distort', 'SRT', f'{rotation}',
             '(', '-clone', '0', '-background', 'gray', '-shadow', f'80x3{shadowx:+}{shadowy:+}', ')',
