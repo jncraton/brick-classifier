@@ -149,7 +149,7 @@ model = model.to(device)
 
 optimizer = optim.Adam(model.classifier.parameters(), lr=3e-4)
 
-model = train_model(model, criterion, optimizer, num_epochs=50)
+model = train_model(model, criterion, optimizer, num_epochs=25)
 
 batch_size = 1
 
