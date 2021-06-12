@@ -112,7 +112,7 @@ parts = [
 
 color = 15
 backgrounds = [3*c for c in ['9f', 'af', 'bf', 'cf', 'df', 'ef', 'ff']]
-angles = list(itertools.product([301, 317, 332, 31, 43, 59], range(17,360,23)))
+angles = list(itertools.product([37, 43, 53], range(17,360,23)))
 noise_levels = ['1', '2', '3']
 blurs = ['1x1', '2x2']
 
