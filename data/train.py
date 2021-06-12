@@ -150,10 +150,6 @@ model.num_classes = len(class_names)
 
 model = model.to(device)
 
-# Parameters of newly constructed modules have requires_grad=True by default
-# Observe that only parameters of final layer are being optimized as
-# opposed to before.
-# optimizer = optim.SGD(model.fc.parameters(), lr=0.001, momentum=0.9)
 optimizer = optim.Adam(model.classifier.parameters(), lr=0.001)
 
 # Decay LR by a factor of 0.1 every 7 epochs
