@@ -6,7 +6,6 @@ Author: Sasank Chilamkurthy, Jonathan Craton
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.optim import lr_scheduler
 import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
@@ -59,7 +58,7 @@ inputs, classes = next(iter(dataloaders["train"]))
 print(f"Classes: {json.dumps(class_names)}")
 
 
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
+def train_model(model, criterion, optimizer, num_epochs=25):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -102,8 +101,6 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
-            if phase == "train":
-                scheduler.step()
 
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
@@ -152,10 +149,7 @@ model = model.to(device)
 
 optimizer = optim.Adam(model.classifier.parameters(), lr=0.001)
 
-# Decay LR by a factor of 0.1 every 7 epochs
-exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1)
-
-model = train_model(model, criterion, optimizer, exp_lr_scheduler, num_epochs=25)
+model = train_model(model, criterion, optimizer, num_epochs=25)
 
 batch_size = 1
 
