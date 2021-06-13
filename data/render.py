@@ -113,8 +113,8 @@ parts = [
 color = 15
 backgrounds = [3*c for c in ['9f', 'af', 'bf', 'cf', 'df', 'ef', 'ff']]
 angles = list(itertools.product([37, 43, 53], range(17,360,23)))
-noise_levels = ['1', '2', '3']
-blurs = ['1x1', '2x2']
+noise_levels = ['00', '05', '10']
+blurs = ['1x1']
 
 if quick:
     angles = list(itertools.product([17], [17]))
@@ -169,8 +169,8 @@ for part in parts:
         shadowintensity = hex(random.randint(60,90))[2:]
         blur = random.choice(blurs)
         noise_level = random.choice(noise_levels)
-        part_brightness = random.randint(-70, 0)
-        brightness = random.randint(-5, 5)
+        part_brightness = random.randint(-10, 0)
+        brightness = random.randint(-2, 2)
         bg = random.choice(backgrounds)
         rotation = random.randint(0, 360)
         
