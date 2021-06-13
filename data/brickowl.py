@@ -60,6 +60,6 @@ if __name__ == '__main__':
     total = 0
 
     for part in parts:
-        total += get_imgs(part, get_part_url(part))
+        total += get_imgs(part, get_part_url(part.rstrip('abcde')))
 
     print(f"Downloaded {total} images")
