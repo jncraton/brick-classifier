@@ -12,9 +12,12 @@ def get_part_url(part):
     """ 
     >>> get_part_url('3023')
     'https://www.brickowl.com/catalog/lego-plate-1-x-2-3023-6225'
+
+    >>> get_part_url('3068')
+    'https://www.brickowl.com/catalog/lego-tile-2-x-2-with-groove-3068-63327'
     """
     
-    r = request.urlopen(f"https://www.brickowl.com/search/catalog?query={part}")
+    r = request.urlopen(f"https://www.brickowl.com/search/catalog?query={part}&cat=1&variant_type=0")
 
     content = r.read().decode('utf8')
 
