@@ -56,6 +56,42 @@ bpy.ops.mesh.normals_make_consistent(
 )
 bpy.ops.object.editmode_toggle()
 
+# Set light
+
+def add_light(name, pos):
+    # create light datablock, set attributes
+    light_data = bpy.data.lamps.new(name=name, type='POINT')
+    light_data.energy = 30
+
+    # create new object with our light datablock
+    light_object = bpy.data.objects.new(name=name, object_data=light_data)
+
+    # link light object
+    bpy.context.scene.objects.link(light_object)
+
+    # make it active 
+    bpy.context.scene.objects.active = light_object
+
+    # change location
+    light_object.location = pos
+
+add_light("light1", (50,50,50))
+add_light("light2", (0,50,0))
+add_light("light3", (0,0,50))
+
+# Set camera
+
+from math import radians
+
+cam1 = bpy.data.cameras.new("Camera")
+cam1.lens = 35
+cam_obj1 = bpy.data.objects.new("Camera", cam1)
+cam_obj1.location = (30/(2**.5), -30, 30/(2**.5))
+cam_obj1.rotation_euler = (radians(0), radians(60), radians(-55))
+context.scene.objects.link(cam_obj1)
+context.scene.camera = context.object
+bpy.context.scene.camera = bpy.data.objects['Camera']
+
 # save #
 
 blend_file = export_model.replace(".3ds",".blend")
@@ -64,7 +100,7 @@ bpy.ops.wm.save_as_mainfile(
 	compress = True
 )
 
-# print output #
+# render #
 
 print("saved as:", blend_file)
 
