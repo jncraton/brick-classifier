@@ -25,7 +25,7 @@ def get_part_urls(part):
 
     driver.close()
 
-def save_top_n(part, n=10):
+def save_top_n(part, n=10, val=1):
     img_urls = list(get_part_urls(part))[:n]
 
     print(f"Saving {len(img_urls)} images for {part}")
@@ -33,7 +33,8 @@ def save_top_n(part, n=10):
     for i, url in enumerate(img_urls):
         r = request.urlopen(url)
 
-        filename = f'train/{part}/ddg-{i}.png'
+        path = 'val' if i < val else 'train'
+        filename = f'{path}/{part}/ddg-{i}.png'
 
         with open(filename, 'wb') as f:
             f.write(r.read())
@@ -57,5 +58,5 @@ if __name__ == '__main__':
         parts = json.load(f)
 
     for part in parts:
-        save_top_n(part, 10)
+        save_top_n(part, 15)
 
