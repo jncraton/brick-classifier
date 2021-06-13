@@ -127,7 +127,7 @@ def train_model(model, criterion, optimizer, num_epochs=25):
     return model
 
 
-feature_extractor_only = False
+feature_extractor_only = True
 
 model = models.squeezenet1_1(pretrained=True)
 
