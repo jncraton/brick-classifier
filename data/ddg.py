@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.firefox.options import Options
 from urllib import request
 from urllib.error import HTTPError
+import subprocess
 
 def get_part_urls(part):
     options = Options()
@@ -32,8 +33,22 @@ def save_top_n(part, n=10):
     for i, url in enumerate(img_urls):
         r = request.urlopen(url)
 
-        with open(f'train/{part}/ddg-{i}.png', 'wb') as f:
+        filename = f'train/{part}/ddg-{i}.png'
+
+        with open(filename, 'wb') as f:
             f.write(r.read())
+
+        subprocess.run([
+            'convert',
+            filename,
+            '-resize', '180x180',
+            '-background', '#ffffff',
+            '-gravity', 'center',
+            '-extent', '256x256',
+            '-colorspace', 'Gray',
+            filename,
+        ])
+
 
 if __name__ == '__main__':
     import json
