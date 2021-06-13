@@ -44,7 +44,7 @@ def get_imgs(part, part_url):
         subprocess.run([
             'convert',
             filename,
-            '-background', f'#{random.choice(backgrounds)}',
+            '-background', '#ffffff',
             '-gravity', 'center',
             '-extent', '256x256',
             '-colorspace', 'Gray',
