@@ -110,7 +110,7 @@ parts = [
 '59443',
 ]
 
-colors = [0,15,71,72]
+colors = [15,71,72]
 backgrounds = [3*c for c in ['9f', 'af', 'bf', 'cf', 'df', 'ef', 'ff']]
 angles = list(itertools.product([37, 43, 53], range(17,360,23)))
 noise_levels = ['00', '05', '10']
