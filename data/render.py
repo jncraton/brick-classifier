@@ -110,7 +110,7 @@ parts = [
 '59443',
 ]
 
-color = 15
+colors = [0,15,71,72]
 backgrounds = [3*c for c in ['9f', 'af', 'bf', 'cf', 'df', 'ef', 'ff']]
 angles = list(itertools.product([37, 43, 53], range(17,360,23)))
 noise_levels = ['00', '05', '10']
@@ -142,10 +142,10 @@ for part in parts:
     except FileExistsError:
         pass
 
-    with open('tmp.ldr', 'w') as f:
-        f. write(f'1 {color} 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat')
-
     for lat,lon in angles:
+        with open('tmp.ldr', 'w') as f:
+            f. write(f'1 {random.choice(colors)} 0 0 0 1 0 0 0 1 0 0 0 1 {part}.dat')
+        
         lat += random.randint(-6, 6)
         lon += random.randint(-5, 5)
 
