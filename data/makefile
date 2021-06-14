@@ -7,3 +7,4 @@ part-classifier.onnx: render.py train.py
 
 clean:
 	rm -rf -- */
+	rm -f geckodriver.log
